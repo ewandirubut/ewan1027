@@ -1,39 +1,400 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Code, GraduationCap, Mail, Phone, MapPin, Github, Linkedin, Facebook, Instagram, Download, Play, Pause, Briefcase } from 'lucide-react';import emailjs from '@emailjs/browser';
-import toast from 'react-hot-toast';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Menu,
+  X,
+  Code2,
+  GraduationCap,
+  Mail,
+  Phone,
+  MapPin,
+  Github,
+  Linkedin,
+  Facebook,
+  Instagram,
+  Download,
+  Play,
+  Pause,
+  Briefcase,
+  ExternalLink,
+} from 'lucide-react';
+import emailjs from '@emailjs/browser';
+import { toast } from 'react-hot-toast';
 
 const Portfolio = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [skillsTab, setSkillsTab] = useState('technical');
-  const [experienceTab, setExperienceTab] = useState('education');
+  const [backgroundTab, setBackgroundTab] = useState('education');
   const [toolsTab, setToolsTab] = useState('All');
-  const [isPlaying, setIsPlaying] = useState(false); 
-  
-  const formRef = useRef();
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [showAll, setShowAll] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+
+  const formRef = useRef(null);
   const audioRef = useRef(null);
 
-  const toggleMusic = () => {
-    setIsPlaying(!isPlaying);
+  const name = 'Ewan Dirubut';
+
+  /*
+   * MAIN INTRODUCTION
+   * Written from the CV: current ERP role, full-stack background,
+   * database design, backend automation, and ongoing HND.
+   */
+  const introduction =
+    'Associate Software Engineer focused on ERP development, backend systems, database design, and business process automation. I enjoy turning complex business requirements into clean, practical software solutions.';
+
+  const shortIntroduction =
+    'Associate Software Engineer focused on ERP development, full-stack engineering, database design, reporting, and business process automation.';
+
+  const roles = [
+    'Associate Software Engineer',
+    'ERP Developer',
+    'Full-Stack Developer',
+    'Business Automation Developer',
+  ];
+
+  const useTypedText = (words, speed = 90, pause = 1400) => {
+    const [wordIndex, setWordIndex] = useState(0);
+    const [characterIndex, setCharacterIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    useEffect(() => {
+      const currentWord = words[wordIndex];
+
+      if (!isDeleting && characterIndex === currentWord.length) {
+        const timeout = setTimeout(() => setIsDeleting(true), pause);
+        return () => clearTimeout(timeout);
+      }
+
+      if (isDeleting && characterIndex === 0) {
+        setIsDeleting(false);
+        setWordIndex((previous) => (previous + 1) % words.length);
+        return;
+      }
+
+      const timeout = setTimeout(
+        () => {
+          setCharacterIndex((previous) =>
+            isDeleting ? previous - 1 : previous + 1
+          );
+        },
+        isDeleting ? speed / 2 : speed
+      );
+
+      return () => clearTimeout(timeout);
+    }, [wordIndex, characterIndex, isDeleting, words, speed, pause]);
+
+    return words[wordIndex].substring(0, characterIndex);
   };
 
-  useEffect(() => {
-    const enableAutoplay = () => {
-      setIsPlaying(true);
-      document.body.removeEventListener('click', enableAutoplay);
-    };
-    
-    document.body.addEventListener('click', enableAutoplay);
-    
-    return () => {
-      document.body.removeEventListener('click', enableAutoplay);
-    };
-  }, []); 
+  const typedText = useTypedText(roles);
+
+  const technicalSkills = [
+    { name: 'ERP Development', level: 90 },
+    { name: 'Database Design', level: 90 },
+    { name: 'SQL / PostgreSQL / MariaDB', level: 88 },
+    { name: 'Backend Development', level: 85 },
+    { name: 'Business Process Automation', level: 88 },
+    { name: 'JasperReports', level: 82 },
+    { name: 'Full-Stack Development', level: 82 },
+    { name: 'Git / GitHub', level: 85 },
+  ];
+
+  const softSkills = [
+    { name: 'Problem Solving', level: 95 },
+    { name: 'Business Logic Analysis', level: 92 },
+    { name: 'Communication', level: 90 },
+    { name: 'Team Collaboration', level: 88 },
+    { name: 'Time Management', level: 85 },
+    { name: 'Client Collaboration', level: 88 },
+  ];
+
+  const educationData = [
+    {
+      period: 'Nov 2024 - Present',
+      title: 'Higher National Diploma in Software Engineering',
+      institution: 'National Institute of Business Management (NIBM)',
+      description:
+        'Focused on software development, programming, database management, and practical software engineering techniques.',
+    },
+    {
+      period: '2024',
+      title: 'Career Essentials in Generative AI',
+      institution: 'Microsoft & LinkedIn',
+      description:
+        'Covered computer ethics, artificial intelligence, generative AI, and AI productivity concepts.',
+    },
+    {
+      period: '2024',
+      title: 'Introduction to Artificial Intelligence',
+      institution: 'LinkedIn Learning',
+      description:
+        'Covered artificial intelligence for business and foundational AI concepts.',
+    },
+    {
+      period: 'Nov 2023 - Nov 2024',
+      title: 'Diploma in Software Engineering',
+      institution: 'National Institute of Business Management (NIBM)',
+      description:
+        'Built hands-on experience with software engineering techniques, programming, databases, and development tools.',
+    },
+    {
+      period: '2022',
+      title: 'IELTS',
+      institution: 'Headway School of Language',
+      description: 'Completed IELTS-focused English language studies.',
+    },
+    {
+      period: '2021',
+      title: 'Advanced Level - Science Stream',
+      institution: 'KM/Wesley High School',
+      description: 'Completed GCE Advanced Level studies in the Science stream.',
+    },
+  ];
+
+  const experienceData = [
+    {
+      period: 'Jan 2026 - Mar 2026',
+      title: 'Associate Software Engineer - ERP Development',
+      institution: 'Ebizclouds | Colombo, Sri Lanka',
+      description:
+        'Design and manage relational databases using PostgreSQL and MariaDB, create tables and integrate JasperReports, and implement business process automation to improve operational workflows.',
+    },
+    {
+      period: '2020 - Present',
+      title: 'Freelancer',
+      institution: 'Self-employed',
+      description:
+        'Designed and deployed websites for small businesses, worked closely with clients to meet requirements and deadlines, built responsive web solutions using HTML, CSS, JavaScript, and MongoDB, and produced digital assets including logos and marketing videos.',
+    },
+  ];
+
+  const projects = [
+    {
+      title: 'Spendz - Expense Tracking Application',
+      category: 'Mobile App',
+      description:
+        'A modern expense tracking mobile application for splitting bills among friends and groups. Includes group creation, shared expense tracking, automatic balance calculation, authentication, and real-time synchronization.',
+      technologies: ['SwiftUI', 'Firebase', 'Firestore', 'MVVM'],
+      image: '/https://postimg.cc/yDmWqBHh',
+      github: 'https://github.com/ewan1027',
+    },
+    {
+      title: 'Tuition Management Android App',
+      category: 'Mobile App',
+      description:
+        'An education management application for tuition centers covering students, teachers, attendance, and assignments. Includes role-based access for Admin, Teacher, and Student users.',
+      technologies: [
+        'Kotlin',
+        'Android Studio',
+        'Firebase',
+        'Firestore',
+        'QR Scanning',
+      ],
+      image: 'https://postimg.cc/gLV1zM2G',
+      github: 'https://github.com/ewan1027/MAD.git',
+    },
+    {
+      title: 'Urban Food E-Commerce Platform',
+      category: 'Web App',
+      description:
+        'A full-stack healthy food marketplace connecting customers with food products, including inventory and order management.',
+      technologies: ['PHP', 'HTML', 'CSS', 'MongoDB', 'SQL'],
+      image: 'https://i.postimg.cc/SKTtwbGz/Urban-Food.png',
+      github: 'https://github.com/ewan1027/Urban-Food-.git',
+    },
+    {
+      title: 'Modern Room Clothing Website',
+      category: 'Web App',
+      description:
+        'A responsive fashion e-commerce website with a product catalogue, cart functionality, and secure login experience.',
+      technologies: ['HTML', 'CSS', 'JavaScript', 'Responsive Design'],
+      image: 'https://i.postimg.cc/s2DN6g5r/Modern-Room.png',
+      github: 'https://github.com/ewan1027/Modern-Room-Clothing-Website',
+    },
+    {
+      title: 'Autonomous Luggage Transporter Robot',
+      category: 'IoT Project',
+      description:
+        'An intelligent luggage-handling robot designed for airport environments using line following, obstacle detection, RFID-based gate selection, and secure luggage handling.',
+      technologies: [
+        'Arduino Mega',
+        'IR Sensors',
+        'Ultrasonic Sensors',
+        'RFID',
+        'Bluetooth',
+        'Servo Motors',
+      ],
+      image: 'https://i.postimg.cc/QN50qTv7/Robot.jpg',
+      github: 'https://github.com/ewan1027',
+    },
+    {
+      title: 'Smart Parcel Box',
+      category: 'IoT Project',
+      description:
+        'A smart package drop-off and retrieval system designed to improve parcel security through sensors, Firebase, and servo motor control.',
+      technologies: ['ESP8266', 'Firebase', 'Sensors', 'Servo Motor'],
+      image: 'https://i.postimg.cc/nLgG4FkT/IOT.jpg',
+      github: 'https://github.com/ewan1027',
+    },
+  ];
+
+  const tools = {
+    Databases: [
+      {
+        name: 'PostgreSQL',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+      },
+      {
+        name: 'MariaDB',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mariadb/mariadb-original.svg',
+      },
+      {
+        name: 'MySQL',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+      },
+      {
+        name: 'MongoDB',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+      },
+      {
+        name: 'SQL',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+      },
+    ],
+    Frameworks: [
+      {
+        name: 'React',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+      },
+      {
+        name: 'Node.js',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+      },
+      {
+        name: 'Auvit Framework',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
+      },
+      {
+        name: 'JasperReports',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
+      },
+    ],
+    Languages: [
+      {
+        name: 'HTML',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg',
+      },
+      {
+        name: 'CSS',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg',
+      },
+      {
+        name: 'JavaScript',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
+      },
+      {
+        name: 'PHP',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
+      },
+      {
+        name: 'C#',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg',
+      },
+      {
+        name: 'Python',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+      },
+    ],
+    Tools: [
+      {
+        name: 'Git',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+      },
+      {
+        name: 'GitHub',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
+      },
+      {
+        name: 'VS Code',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg',
+      },
+      {
+        name: 'Android Studio',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg',
+      },
+      {
+        name: 'Firebase',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg',
+      },
+      {
+        name: 'Figma',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+      },
+      {
+        name: 'Photoshop',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg',
+      },
+      {
+        name: 'Canva',
+        icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/canva/canva-original.svg',
+      },
+    ],
+  };
+
+  const socialLinks = {
+    github: 'https://github.com/ewan1027',
+    linkedin: 'https://www.linkedin.com/in/ewandirubut',
+    facebook: 'https://web.facebook.com/ewan.dirubut',
+    instagram: 'https://www.instagram.com/btwewan/',
+  };
+
+  const contactInfo = {
+    email: 'ewan6852@gmail.com',
+    phone: '+94 773681923',
+    location: 'Colombo, Sri Lanka',
+    website: 'https://ewandirubut.site/',
+  };
+
+  const cvUrl =
+    'https://drive.google.com/file/d/1P06yRlajiRuLEGcUUK2Mn-GHNX7ugcxq/view?usp=drive_link';
+
+  const filteredProjects =
+    activeCategory === 'All'
+      ? projects
+      : projects.filter((project) => project.category === activeCategory);
+
+  const visibleProjects = filteredProjects.slice(
+    0,
+    showAll ? filteredProjects.length : 6
+  );
+
+  const displayedTools =
+    toolsTab === 'All'
+      ? Object.entries(tools).flatMap(([category, items]) =>
+          items.map((item) => ({ ...item, category }))
+        )
+      : (tools[toolsTab] || []).map((item) => ({
+          ...item,
+          category: toolsTab,
+        }));
+
+  const scrollToSection = (sectionId) => {
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+    setIsMenuOpen(false);
+  };
+
+  const toggleMusic = () => setIsPlaying((previous) => !previous);
 
   useEffect(() => {
+    if (!audioRef.current) return;
+
     if (isPlaying) {
-      audioRef.current.play().catch(error => {
-        console.log("Audio autoplay was prevented.");
+      audioRef.current.play().catch(() => {
         setIsPlaying(false);
       });
     } else {
@@ -41,528 +402,668 @@ const Portfolio = () => {
     }
   }, [isPlaying]);
 
-  const sendEmail = (e) => {
-    e.preventDefault();
-    const serviceID = 'service_m5imylg';
-    const templateID = 'template_5d9k5ia';
-    const publicKey = '_DYTUDB_14phqE19z';
-
-    emailjs.sendForm(serviceID, templateID, formRef.current, publicKey)
-    .then(
-      (result) => {
-        toast.success('Message sent successfully!');
-        formRef.current.reset();
-      },
-      (error) => {
-        toast.error('Something went wrong. Please try again.');
-        console.error(error.text);
-      }
-    );
-  };
-
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMenuOpen(false);
-  };
-
   useEffect(() => {
     const handleScroll = () => {
       const sections = ['home', 'about', 'projects', 'tools', 'contact'];
-      const scrollPosition = window.scrollY + 100;
+      const position = window.scrollY + 140;
 
       for (const section of sections) {
         const element = document.getElementById(section);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section);
-            break;
-          }
+        if (!element) continue;
+
+        if (
+          position >= element.offsetTop &&
+          position < element.offsetTop + element.offsetHeight
+        ) {
+          setActiveSection(section);
+          break;
         }
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const useTypedText = (words, speed = 100, pause = 1500) => {
-    const [index, setIndex] = useState(0);
-    const [subIndex, setSubIndex] = useState(0);
-    const [forward, setForward] = useState(true);
+  const sendEmail = async (event) => {
+    event.preventDefault();
 
-    useEffect(() => {
-        if (index >= words.length) return;
+    if (!formRef.current) return;
 
-        if (forward && subIndex === words[index].length + 1) {
-            setTimeout(() => setForward(false), pause);
-            return;
-        }
+    setIsSending(true);
 
-        if (!forward && subIndex === 0) {
-            setForward(true);
-            setIndex((prev) => (prev + 1) % words.length);
-            return;
-        }
+    try {
+      await emailjs.sendForm(
+        'service_m5imylg',
+        'template_5d9k5ia',
+        formRef.current,
+        '_DYTUDB_14phqE19z'
+      );
 
-        const timeout = setTimeout(() => {
-            setSubIndex((prev) => prev + (forward ? 1 : -1));
-        }, forward ? speed : speed / 2);
-
-        return () => clearTimeout(timeout);
-    }, [subIndex, index, forward, words, speed, pause]);
-
-    return words[index].substring(0, subIndex);
+      toast.success('Message sent successfully!');
+      formRef.current.reset();
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
   };
-
-  const yourName = "Ewan Dirubut";
-  
-  // Custom JSX Introduction to highlight Ebizclouds
-  const introduction = (
-    <span>
-      I am an Associate Software Engineer at <strong className="text-xl text-red-500">Ebizclouds</strong>, specializing in enterprise ERP systems, database design, and business process automation. With a strong foundation in backend architecture and reporting, I focus on building scalable modules for finance, inventory, and HR. I am passionate about transforming complex business logic into efficient, automated digital solutions that drive real-world impact.
-    </span>
-  );
-  
-  const roles = ['Associate Software Engineer', 'ERP Developer', 'Business Automation Specialist'];
-  const typedText = useTypedText(roles, 100, 1500);
-
-  const technicalSkills = [
-      { name: 'ERP Development', level: 85 },
-      { name: 'PostgreSQL / MariaDB / SQL', level: 90 },
-      { name: 'Java / Backend', level: 85 },
-      { name: 'Auvit Framework', level: 85 },
-      { name: 'JasperReports', level: 80 },
-      { name: 'Database Design', level: 90 },
-      { name: 'Git/GitHub', level: 88 },
-  ];  
-
-  const softSkills = [
-      { name: 'Problem Solving', level: 95 },
-      { name: 'Business Logic Analysis', level: 90 },
-      { name: 'Communication', level: 90 },
-      { name: 'Time Management', level: 85 },
-      { name: 'Team Collaboration', level: 88 },
-  ];
-
-  const educationData = [
-      {
-          year: 'Nov 2024 - Jan 2026',
-          title: 'Higher National Diploma in Software Engineering',
-          institution: 'National Institute of Business Management (NIBM)',
-          description: 'Focused on advanced software development, programming, and enterprise database management.'
-      },
-      {
-          year: '2024',
-          title: 'Career Essentials in Generative AI',
-          institution: 'Microsoft and LinkedIn',
-          description: 'Covered Computer Ethics, Artificial Intelligence (AI), Generative AI, and Microsoft Copilot.'
-      },
-      {
-          year: '2023 - 2024',
-          title: 'Diploma in Software Engineering',
-          institution: 'National Institute of Business Management (NIBM)',
-          description: 'Gained hands-on experience with core software engineering techniques and tools.'
-      },
-      {
-          year: '2021',
-          title: 'Introduction to Business Management',
-          institution: "King's College London",
-          description: 'Developed foundational understanding of organizational structures and business workflows.'
-      },
-  ];
-
-  const experienceData = [
-       {
-        year: 'Jan 2026 - Present',
-        title: 'Associate Software Engineer',
-        institution: 'Ebizclouds',
-        description: 'Developing and customizing enterprise ERP systems using the Auvit Framework. Responsible for business process automation, database design in PostgreSQL & MariaDB, and building robust backend modules for Finance, Inventory, and HR operations using JasperReports.'
-      },
-       {
-        year: '2020 - Present',
-        title: 'Freelance Developer & Designer',
-        institution: 'Self-employed',
-        description: 'Collaborated with clients to deliver digital solutions including full-stack web development, digital content, and branding. Managed end-to-end project delivery and client communications.'
-      },
-      {
-        year: '2020 - 2021',
-        title: 'Data Entry Operator',
-        institution: "Abdul Aziz & Son's Lanka fuel mart",
-        description: 'Managed and processed large sets of data. Developed an understanding of data management systems and business data workflows.'
-      },
-  ];
-
-  const projects = [
-     {
-        title: 'Tuition Management Android App',
-        category: 'Mobile App',
-        description: 'Designed to help tuition centers streamline their operations and enhance learning experiences. This app simplifies student management, attendance tracking, assignment submissions, and much more.',
-        technologies: ['Android Studio', 'Firebase (Firestore, Firebase Storage)', 'QR Code Scanning'],
-        image: 'MAD.png',  
-        github: 'https://github.com/ewan1027/MAD.git',  
-    },
-      {
-          title: 'Smart Parcel Box',
-          category: 'IoT Project',
-          description: "This system automates the package drop-off process, ensuring deliveries are secure, constantly monitored, and accessible only by the owner.",
-          technologies: ['ESP8266', 'Firebase', 'Sensors', 'Servo Motor'],
-          image: 'https://i.postimg.cc/nLgG4FkT/IOT.jpg',
-          github: 'https://github.com/ewan1027', 
-      },
-      {
-          title: 'Autonomous Luggage Transporter Robot',
-          category: 'IoT Project',
-          description: 'This robot automates luggage handling in airports, using line-following and obstacle detection for safe navigation. It features weight measurement, RFID-based gate selection, and a secure luggage compartment.',
-          technologies: ['Arduino Mega', 'IR & Ultrasonic Sensors', 'RFID', 'Bluetooth', 'Servo Motors'],
-          image: 'https://i.postimg.cc/QN50qTv7/Robot.jpg',
-          github: 'https://github.com/ewan1027', 
-      },
-       {
-          title: 'Urban Food E-Commerce Platform',
-          category: 'Web App',
-          description: 'A fresh food e-commerce platform connecting customers with healthy, high-quality products. Features a robust backend with MongoDB & SQL and a user-friendly frontend.',
-          technologies: ['PHP', 'HTML', 'CSS', 'MongoDB', 'SQL'],
-          image: 'https://i.postimg.cc/SKTtwbGz/Urban-Food.png',
-          github: 'https://github.com/ewan1027/Urban-Food-.git',
-      },
-      {
-          title: 'Modern Room Clothing Website',
-          category: 'Web App',
-          description: 'A fully developed, responsive e-commerce website for a clothing brand, built with HTML, CSS, and JavaScript. It features a secure authentication system and a clean, intuitive UI/UX.',
-          technologies: ['HTML', 'CSS', 'JavaScript', 'Responsive Design'],
-          image: 'https://i.postimg.cc/s2DN6g5r/Modern-Room.png',
-          github: 'https://github.com/ewan1027/Modern-Room-Clothing-Website',
-      },
-  ];
-  
-  const socialLinks = {
-      github: "https://github.com/ewan1027",
-      linkedin: "https://www.linkedin.com/in/ewandirubut",
-      facebook: "https://web.facebook.com/ewan.dirubut",
-      instagram: "https://www.instagram.com/btwewan/"
-  };
-
-  const contactInfo = {
-      email: "ewan6852@ebizclouds.com",
-      phone: "+94 773681923",
-      location: "Colombo, Sri Lanka"
-  };
-
-  const cvUrl = "https://drive.google.com/file/d/1P06yRlajiRuLEGcUUK2Mn-GHNX7ugcxq/view?usp=drive_link"; 
-  const profilePicUrl = "https://i.postimg.cc/zBNGvYnF/image-jpeg.jpg";
-
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [showAll, setShowAll] = useState(false);
-
-  const filteredProjects = projects.filter((project) => {
-      if (activeCategory === 'All') return true;
-      return project.category === activeCategory;
-  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black ">
-        <audio ref={audioRef} src="/background-music.mp3" loop />
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-black via-zinc-950 to-black text-white">
+      <audio ref={audioRef} src="/background-music.mp3" loop />
 
-        <button
-          onClick={toggleMusic}
-          className="fixed z-50 flex items-center justify-center w-12 h-12 text-white transition-all border rounded-full bottom-5 right-5 bg-red-600/50 backdrop-blur-sm border-white/20 hover:bg-red-600"
-          aria-label={isPlaying ? 'Pause music' : 'Play music'}
-        >
-          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-        </button>
+      {/* MUSIC CONTROL */}
+      <button
+        type="button"
+        onClick={toggleMusic}
+        className="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-red-600/70 text-white shadow-lg backdrop-blur-md transition hover:scale-110 hover:bg-red-600"
+        aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
+      >
+        {isPlaying ? <Pause size={19} /> : <Play size={19} />}
+      </button>
 
-        <nav className="fixed top-0 z-50 w-full border-b bg-black/20 backdrop-blur-md border-white/10">
-            <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    <div className="text-2xl font-bold text-transparent bg-gradient-to-r from-red-500 via-red-700 to-red-900 bg-clip-text">
-                        {yourName}
-                    </div>
-                    
-                    <div className="hidden space-x-8 md:flex">
-                        {['home', 'about', 'projects', 'tools','contact'].map((item) => (
-                            <button
-                                key={item}
-                                onClick={() => scrollToSection(item)}
-                                className={`capitalize transition-all duration-300 hover:text-red-600 ${
-                                    activeSection === item 
-                                    ? 'text-red-600 border-b-2 border-red-600' 
-                                    : 'text-white/80'
-                                }`}
-                            >
-                                {item}
-                            </button>
-                        ))}
-                    </div>
+      {/* NAVBAR */}
+      <nav className="fixed top-0 z-40 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => scrollToSection('home')}
+            className="text-xl font-extrabold tracking-tight text-transparent bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text"
+          >
+            {name}
+          </button>
 
-                    <button
-                        className="text-white md:hidden"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                </div>
+          <div className="hidden items-center gap-8 md:flex">
+            {['home', 'about', 'projects', 'tools', 'contact'].map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => scrollToSection(item)}
+                className={`capitalize transition ${
+                  activeSection === item
+                    ? 'border-b-2 border-red-500 pb-1 text-red-500'
+                    : 'text-white/70 hover:text-red-400'
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            className="text-white md:hidden"
+            onClick={() => setIsMenuOpen((previous) => !previous)}
+            aria-label="Toggle navigation"
+          >
+            {isMenuOpen ? <X size={25} /> : <Menu size={25} />}
+          </button>
+        </div>
+
+        {isMenuOpen && (
+          <div className="border-t border-white/10 bg-black/90 px-4 py-3 md:hidden">
+            {['home', 'about', 'projects', 'tools', 'contact'].map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => scrollToSection(item)}
+                className="block w-full rounded-lg px-3 py-3 text-left capitalize text-white/80 hover:bg-white/5 hover:text-red-400"
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        )}
+      </nav>
+
+      {/* HERO */}
+      <section
+        id="home"
+        className="flex min-h-screen items-center px-5 pb-16 pt-28 sm:px-8"
+      >
+        <div className="mx-auto grid max-w-6xl items-center gap-14 md:grid-cols-2">
+          <div className="order-2 md:order-1">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-red-500">
+              Associate Software Engineer
+            </p>
+
+            <h1 className="text-5xl font-black leading-tight sm:text-6xl">
+              Hi, I&apos;m{' '}
+              <span className="text-transparent bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text">
+                Ewan
+              </span>
+            </h1>
+
+            <div className="mt-5 min-h-[42px] text-2xl font-semibold text-gray-300 sm:text-3xl">
+              I&apos;m an{' '}
+              <span className="text-red-500">{typedText}</span>
+              <span className="animate-pulse text-red-500">|</span>
             </div>
 
-            {isMenuOpen && (
-                <div className="border-t md:hidden bg-black/40 backdrop-blur-md border-white/10">
-                    <div className="px-4 pt-2 pb-3 space-y-1">
-                        {['home', 'about', 'projects','tools', 'contact'].map((item) => (
-                            <button
-                                key={item}
-                                onClick={() => scrollToSection(item)}
-                                className="block w-full px-3 py-2 text-left capitalize transition-colors text-white/80 hover:text-red-600"
-                            >
-                                {item}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </nav>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-white/65 sm:text-lg">
+              {introduction}
+            </p>
 
-        <section id="home" className="flex items-center justify-center min-h-screen px-6 pt-20">
-            <div className="grid items-center max-w-6xl gap-12 mx-auto md:grid-cols-2">
-                <div className="order-2 space-y-6 md:order-1 animate-fade-in">
-                    <h1 className="text-4xl font-bold text-red-600 md:text-6xl">
-                        Hi, I'm <span className="text-red-600">{yourName.split(' ')[0]}</span>
-                    </h1>
-                    <div className="text-2xl font-semibold text-gray-300 md:text-3xl">
-                        I'm an <span className="text-red-500">{typedText}</span>
-                    </div>
-                    <p className="max-w-lg text-lg leading-relaxed text-gray-400">
-                        {introduction}
-                    </p>
-                    
-                    <div className="flex space-x-6">
-                        <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-400 transition-colors duration-300 hover:text-red-600">
-                            <Github />
-                        </a>
-                        <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-2xl text-gray-400 transition-colors duration-300 hover:text-red-600">
-                            <Linkedin />
-                        </a>
-                    </div>
-                    
-                    <a href={cvUrl} download className="inline-flex items-center gap-2 px-8 py-4 font-semibold text-white transition-all duration-300 transform rounded-full shadow-lg bg-gradient-to-r from-red-600 to-pink-800 hover:from-red-700 hover:to-pink-600 hover:scale-105 hover:shadow-red-500/25">
-                        <Download size={18} />
-                        Download CV
-                    </a>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <button
+                type="button"
+                onClick={() => scrollToSection('projects')}
+                className="rounded-full bg-gradient-to-r from-red-600 to-pink-700 px-7 py-3.5 font-semibold shadow-lg shadow-red-900/20 transition hover:-translate-y-1 hover:from-red-500 hover:to-pink-600"
+              >
+                View My Work
+              </button>
+
+              <a
+                href={cvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-7 py-3.5 font-semibold text-white transition hover:border-red-500/50 hover:bg-red-500/10"
+              >
+                <Download size={18} />
+                View CV
+              </a>
+            </div>
+
+            <div className="mt-8 flex items-center gap-5">
+              <a
+                href={socialLinks.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="text-white/55 transition hover:text-red-500"
+              >
+                <Github size={24} />
+              </a>
+              <a
+                href={socialLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="text-white/55 transition hover:text-red-500"
+              >
+                <Linkedin size={24} />
+              </a>
+              <a
+                href={contactInfo.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-white/50 transition hover:text-red-400"
+              >
+                ewandirubut.site
+              </a>
+            </div>
+          </div>
+
+          <div className="order-1 flex justify-center md:order-2">
+            <div className="relative">
+              <div className="absolute -inset-5 rounded-[2rem] bg-gradient-to-br from-red-600/30 to-pink-700/20 blur-2xl" />
+              <div className="relative h-72 w-72 rotate-3 rounded-[2rem] bg-gradient-to-br from-red-600 to-pink-700 p-1 shadow-2xl shadow-red-900/30 transition hover:rotate-0 sm:h-96 sm:w-96">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[1.8rem] bg-zinc-900">
+                  <img
+                    src="/image.jpeg"
+                    alt="Ewan Dirubut"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
-                
-                <div className="flex justify-center order-1 md:order-2">
-                    <div className="relative">
-                        <div className="w-64 h-64 transition-transform duration-500 transform shadow-2xl md:w-80 md:h-80 rounded-2xl bg-gradient-to-br from-red-600 to-pink-600 shadow-red-600/25 rotate-3 hover:rotate-0"></div>
-                        <img 
-                            src={profilePicUrl}
-                            alt="Profile" 
-                            className="absolute top-0 left-0 object-cover w-64 h-64 transition-transform duration-500 transform border-4 border-red-600 md:w-80 md:h-80 rounded-2xl -rotate-3 hover:rotate-0"
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT */}
+      <section id="about" className="scroll-mt-20 px-4 py-24 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <SectionHeading
+            eyebrow="Profile"
+            title="About Me"
+            description={shortIntroduction}
+          />
+
+          <div className="grid gap-7 lg:grid-cols-3">
+            <GlassCard>
+              <div className="mb-6 flex items-center gap-3">
+                <Briefcase className="text-red-500" size={25} />
+                <h3 className="text-2xl font-bold">Professional Profile</h3>
+              </div>
+
+              <p className="leading-8 text-white/65">{introduction}</p>
+
+              <div className="mt-7 space-y-3">
+                <InfoRow label="Current Role" value="Associate Software Engineer" />
+                <InfoRow label="Specialization" value="ERP Development" />
+                <InfoRow label="Location" value="Colombo, Sri Lanka" />
+              </div>
+            </GlassCard>
+
+            <GlassCard>
+              <div className="mb-6 flex items-center gap-3">
+                <Code2 className="text-red-500" size={25} />
+                <h3 className="text-2xl font-bold">Skills</h3>
+              </div>
+
+              <div className="mb-7 flex rounded-xl bg-white/5 p-1">
+                {[
+                  ['technical', 'Technical'],
+                  ['soft', 'Soft Skills'],
+                ].map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setSkillsTab(value)}
+                    className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                      skillsTab === value
+                        ? 'bg-gradient-to-r from-red-600 to-pink-700 text-white'
+                        : 'text-white/55 hover:text-white'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="space-y-5">
+                {(skillsTab === 'technical' ? technicalSkills : softSkills).map(
+                  (skill) => (
+                    <div key={skill.name}>
+                      <div className="mb-2 flex justify-between text-sm">
+                        <span className="text-white/75">{skill.name}</span>
+                        <span className="text-red-400">{skill.level}%</span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-red-600 to-pink-600"
+                          style={{ width: `${skill.level}%` }}
                         />
+                      </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" className="px-4 py-20">
-            <div className="max-w-6xl mx-auto">
-                <h2 className="mb-16 text-4xl font-bold text-center text-transparent md:text-5xl bg-gradient-to-r from-red-500 to-red-800 bg-clip-text">
-                    About Me
-                </h2>
-                <div className="grid gap-8 md:grid-cols-3">
-                    {/* Changed from generic User Intro to Professional Experience Profile */}
-                    <div className="p-8 transition-all duration-300 border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-400/50 hover:transform hover:scale-105">
-                        <div className="flex items-center mb-6">
-                            <Briefcase className="mr-3 text-red-600" size={24} />
-                            <h3 className="text-2xl font-bold text-white">Professional Experience</h3>
-                        </div>
-                        <p className="leading-relaxed text-white/80">
-                            {introduction}
-                        </p>
-                        <div className="flex mt-6 space-x-4">
-                            <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="transition-colors text-white/60 hover:text-red-600"><Github size={20} /></a>
-                            <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="transition-colors text-white/60 hover:text-red-600"><Linkedin size={20} /></a>
-                        </div>
-                    </div>
-
-                    <div className="p-8 transition-all duration-300 border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-600/50 hover:transform hover:scale-105">
-                        <div className="flex items-center mb-6">
-                            <Code className="mr-3 text-red-600" size={24} />
-                            <h3 className="text-2xl font-bold text-white">Skills</h3>
-                        </div>
-                        <div className="flex p-1 mb-6 rounded-lg bg-white/5">
-                            <button onClick={() => setSkillsTab('technical')} className={`flex-1 py-2 px-4 rounded-md transition-all duration-300 ${skillsTab === 'technical' ? 'bg-gradient-to-r from-red-600 to-pink-900 text-white' : 'text-white/60 hover:text-white'}`}>Technical</button>
-                            <button onClick={() => setSkillsTab('soft')} className={`flex-1 py-2 px-4 rounded-md transition-all duration-300 ${skillsTab === 'soft' ? 'bg-gradient-to-r from-red-600 to-pink-900 text-white' : 'text-white/60 hover:text-white'}`}>Soft Skills</button>
-                        </div>
-                        <div className="space-y-4">
-                            {(skillsTab === 'technical' ? technicalSkills : softSkills).map((skill, index) => (
-                                <div key={index}>
-                                    <div className="flex justify-between mb-2"><span className="text-sm text-white/80">{skill.name}</span><span className="text-sm text-red-500">{skill.level}%</span></div>
-                                    <div className="w-full h-2 rounded-full bg-white/10"><div className="h-2 transition-all duration-1000 rounded-full bg-gradient-to-r from-red-600 to-pink-500" style={{ width: `${skill.level}%` }}></div></div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="p-8 transition-all duration-300 border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-600/50 hover:transform hover:scale-105">
-                        <div className="flex items-center mb-6">
-                            <GraduationCap className="mr-3 text-red-600" size={24} />
-                            <h3 className="text-2xl font-bold text-white">Background</h3>
-                        </div>
-                        <div className="flex p-1 mb-6 rounded-lg bg-white/5">
-                            <button onClick={() => setExperienceTab('education')} className={`flex-1 py-2 px-4 rounded-md transition-all duration-300 ${experienceTab === 'education' ? 'bg-gradient-to-r from-red-600 to-pink-900 text-white' : 'text-white/60 hover:text-white'}`}>Education</button>
-                            <button onClick={() => setExperienceTab('experience')} className={`flex-1 py-2 px-4 rounded-md transition-all duration-300 ${experienceTab === 'experience' ? 'bg-gradient-to-r from-red-600 to-pink-900 text-white' : 'text-white/60 hover:text-white'}`}>Experience</button>
-                        </div>
-                        <div className="space-y-6">
-                            {(experienceTab === 'education' ? educationData : experienceData).map((item, index) => (
-                                <div key={index} className="relative pl-6 border-l-2 border-red-500/30">
-                                    <div className="absolute top-0 w-3 h-3 bg-red-500 rounded-full -left-2"></div>
-                                    <div className="mb-1 text-sm font-semibold text-red-500">{item.year}</div>
-                                    <h4 className="mb-1 font-semibold text-white">{item.title}</h4>
-                                    <p className="mb-2 text-sm text-red-500">{item.institution}</p>
-                                    <p className="text-sm text-white/60">{item.description}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="projects" className="px-4 py-20">
-            <div className="max-w-6xl mx-auto">
-                <h2 className="mb-16 text-4xl font-bold text-center text-transparent md:text-5xl bg-gradient-to-r from-red-500 to-red-800 bg-clip-text">
-                    Featured Projects
-                </h2>
-                <div className="flex flex-wrap justify-center gap-4 mb-12">
-                    {['All', 'Web App', 'IoT Project', 'Mobile App', 'UI/UX Design', 'Desktop App'].map((category) => (
-                        <button key={category} onClick={() => { setActiveCategory(category); setShowAll(false); }} className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 border border-white/20 ${activeCategory === category ? 'bg-gradient-to-r from-red-600 to-pink-800 text-white' : 'text-white/70 hover:bg-gradient-to-r hover:from-red-600 hover:to-pink-800 hover:text-white'}`}>
-                            {category}
-                        </button>
-                    ))}
-                </div>
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredProjects.slice(0, showAll ? filteredProjects.length : 6).map((project, index) => (
-                        <div key={index} className="overflow-hidden transition-all duration-300 border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-600/50 hover:transform hover:scale-105 group">
-                            <div className="relative overflow-hidden"><img src={project.image} alt={project.title} className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-110" /><div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div></div>
-                            <div className="p-6">
-                                <h3 className="mb-3 text-xl font-bold text-white">{project.title}</h3>
-                                <p className="mb-4 leading-relaxed text-white/70">{project.description}</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {project.technologies.map((tech, techIndex) => (<span key={techIndex} className="px-3 py-1 text-sm text-red-400 border rounded-full bg-red-700/20 border-red-500/30">{tech}</span>))}
-                                </div>
-                                <div className="flex gap-4 mt-4">
-                                    {project.github && (<a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center text-red-600 transition-colors hover:text-red-500"><Github className="mr-1" size={18} /> GitHub</a>)}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                {!showAll && filteredProjects.length > 6 && (
-                    <div className="mt-12 text-center">
-                        <button onClick={() => setShowAll(true)} className="px-6 py-3 font-semibold text-white transition-all rounded-full shadow-lg bg-gradient-to-r from-red-600 to-pink-800 hover:from-red-700 hover:to-pink-600 hover:scale-105 hover:shadow-red-500/25">
-                            View More
-                        </button>
-                    </div>
+                  )
                 )}
-            </div>
-        </section>
+              </div>
+            </GlassCard>
 
-        <section id="tools" className="px-4 py-20">
-            <div className="max-w-6xl mx-auto">
-                <h2 className="mb-16 text-4xl font-bold text-center text-transparent md:text-5xl bg-gradient-to-r from-red-500 to-red-800 bg-clip-text">
-                    Tools & Technics
-                </h2>
-                <div className="flex justify-center mb-12">
-                    <div className="flex flex-wrap justify-center p-2 border rounded-xl bg-white/5 backdrop-blur-md border-white/10">
-                        {/* Reordered to highlight Databases and Frameworks */}
-                        {['All', 'Databases', 'Frameworks', 'Languages', 'Tools'].map((category) => (
-                            <button key={category} onClick={() => setToolsTab(category)} className={`px-6 py-3 rounded-lg transition-all duration-300 font-medium ${toolsTab === category ? 'bg-gradient-to-r from-red-600 to-pink-800 text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10'}`}>
-                                {category}
-                            </button>
-                        ))}
-                    </div>
+            <GlassCard>
+              <div className="mb-6 flex items-center gap-3">
+                <GraduationCap className="text-red-500" size={25} />
+                <h3 className="text-2xl font-bold">Background</h3>
+              </div>
+
+              <div className="mb-7 flex rounded-xl bg-white/5 p-1">
+                <button
+                  type="button"
+                  onClick={() => setBackgroundTab('education')}
+                  className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                    backgroundTab === 'education'
+                      ? 'bg-gradient-to-r from-red-600 to-pink-700 text-white'
+                      : 'text-white/55 hover:text-white'
+                  }`}
+                >
+                  Education
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBackgroundTab('experience')}
+                  className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                    backgroundTab === 'experience'
+                      ? 'bg-gradient-to-r from-red-600 to-pink-700 text-white'
+                      : 'text-white/55 hover:text-white'
+                  }`}
+                >
+                  Experience
+                </button>
+              </div>
+
+              <div className="max-h-[520px] space-y-7 overflow-y-auto pr-2">
+                {(backgroundTab === 'education'
+                  ? educationData
+                  : experienceData
+                ).map((item) => (
+                  <TimelineItem key={`${item.period}-${item.title}`} {...item} />
+                ))}
+              </div>
+            </GlassCard>
+          </div>
+        </div>
+      </section>
+
+      {/* PROJECTS */}
+      <section id="projects" className="scroll-mt-20 px-4 py-24 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <SectionHeading
+            eyebrow="Selected Work"
+            title="Featured Projects"
+            description="A selection of software, mobile, web, and IoT projects demonstrating practical engineering skills."
+          />
+
+          <div className="mb-12 flex flex-wrap justify-center gap-3">
+            {['All', 'Web App', 'Mobile App', 'IoT Project'].map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => {
+                  setActiveCategory(category);
+                  setShowAll(false);
+                }}
+                className={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                  activeCategory === category
+                    ? 'border-red-500 bg-gradient-to-r from-red-600 to-pink-700 text-white'
+                    : 'border-white/10 bg-white/5 text-white/60 hover:border-red-500/40 hover:text-white'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+            {visibleProjects.map((project) => (
+              <article
+                key={project.title}
+                className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] backdrop-blur-md transition duration-300 hover:-translate-y-2 hover:border-red-500/40"
+              >
+                <div className="relative h-52 overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+                  <span className="absolute bottom-4 left-4 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-xs text-red-300 backdrop-blur-md">
+                    {project.category}
+                  </span>
                 </div>
-                <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
-                    {/* Database Section */}
-                    {(toolsTab === 'All' || toolsTab === 'Databases') && [
-                        { name: 'PostgreSQL', color: '#336791', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
-                        { name: 'MariaDB', color: '#003545', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mariadb/mariadb-original.svg' },
-                        { name: 'MySQL', color: '#4479A1', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
-                        { name: 'SQL', color: '#CC292B', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqldeveloper/sqldeveloper-original.svg' },
-                    ].map((tool, index) => (<div key={index} className="flex flex-col items-center p-6 transition-all duration-300 transform border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-400/50 hover:scale-105 hover:shadow-lg group"><div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full" style={{ backgroundColor: `${tool.color}20` }}><img src={tool.icon} alt={tool.name} className="w-10 h-10" /></div><h3 className="font-semibold text-center text-white transition-colors group-hover:text-red-400">{tool.name}</h3></div>))}
-                    
-                    {/* Frameworks Section */}
-                    {(toolsTab === 'All' || toolsTab === 'Frameworks') && [
-                        { name: 'Auvit Framework', color: '#E34F26', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/webpack/webpack-original.svg' }, // Webpack cube used as generic framework visualization
-                        { name: 'JasperReports', color: '#31A8FF', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
-                        { name: 'React', color: '#61DAFB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
-                        { name: 'Node.js', color: '#339933', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
-                    ].map((tool, index) => (<div key={index} className="flex flex-col items-center p-6 transition-all duration-300 transform border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-400/50 hover:scale-105 hover:shadow-lg group"><div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full" style={{ backgroundColor: `${tool.color}20` }}><img src={tool.icon} alt={tool.name} className="w-10 h-10" /></div><h3 className="font-semibold text-center text-white transition-colors group-hover:text-red-400">{tool.name}</h3></div>))}
 
-                    {/* Languages Section */}
-                    {(toolsTab === 'All' || toolsTab === 'Languages') && [
-                        { name: 'Java', color: '#ED8B00', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
-                        { name: 'PHP', color: '#777BB4', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg' },
-                        { name: 'JavaScript', color: '#F7DF1E', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
-                        { name: 'HTML/CSS', color: '#E34F26', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
-                    ].map((tool, index) => (<div key={index} className="flex flex-col items-center p-6 transition-all duration-300 transform border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-400/50 hover:scale-105 hover:shadow-lg group"><div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full" style={{ backgroundColor: `${tool.color}20` }}><img src={tool.icon} alt={tool.name} className="w-10 h-10" /></div><h3 className="font-semibold text-center text-white transition-colors group-hover:text-red-400">{tool.name}</h3></div>))}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold">{project.title}</h3>
+                  <p className="mt-3 leading-7 text-white/60">
+                    {project.description}
+                  </p>
 
-                    {/* General Tools Section */}
-                    {(toolsTab === 'All' || toolsTab === 'Tools') && [
-                        { name: 'Git', color: '#F05032', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
-                        { name: 'VS Code', color: '#007ACC', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg' },
-                        { name: 'Android Studio', color: '#3DDC84', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg' },
-                        { name: 'Figma', color: '#F24E1E', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg' },
-                    ].map((tool, index) => (<div key={index} className="flex flex-col items-center p-6 transition-all duration-300 transform border bg-white/5 backdrop-blur-md rounded-2xl border-white/10 hover:border-red-400/50 hover:scale-105 hover:shadow-lg group"><div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full" style={{ backgroundColor: `${tool.color}20` }}><img src={tool.icon} alt={tool.name} className="w-10 h-10" /></div><h3 className="font-semibold text-center text-white transition-colors group-hover:text-red-400">{tool.name}</h3></div>))}
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {project.technologies.map((technology) => (
+                      <span
+                        key={technology}
+                        className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs text-red-300"
+                      >
+                        {technology}
+                      </span>
+                    ))}
+                  </div>
+
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-red-400 transition hover:text-red-300"
+                    >
+                      <Github size={17} />
+                      View on GitHub
+                      <ExternalLink size={14} />
+                    </a>
+                  )}
                 </div>
-            </div>
-        </section>
+              </article>
+            ))}
+          </div>
 
-        <section id="contact" className="px-4 py-20">
-            <div className="max-w-6xl mx-auto">
-                <h2 className="mb-16 text-4xl font-bold text-center text-transparent md:text-5xl bg-gradient-to-r from-red-500 to-red-800 bg-clip-text">
-                    Let's Connect
-                </h2>
-                <div className="grid gap-10 md:grid-cols-2">
-                    <div className="flex flex-col h-full p-8 border shadow-lg rounded-2xl bg-white/5 backdrop-blur-md border-white/10">
-                        <h3 className="mb-6 text-2xl font-bold text-white">Get in Touch</h3>
-                        <p className="mb-8 text-white/70">Feel free to reach out via email, phone, or the contact form.</p>
-                        <div className="mb-8 space-y-6">
-                            <div className="flex items-center gap-4"><Mail className="text-red-600" size={24} /><div><h4 className="font-semibold text-white">Email</h4><p className="text-white/60">{contactInfo.email}</p></div></div>
-                            <div className="flex items-center gap-4"><Phone className="text-red-600" size={24} /><div><h4 className="font-semibold text-white">Phone</h4><p className="text-white/60">{contactInfo.phone}</p></div></div>
-                            <div className="flex items-center gap-4"><MapPin className="text-red-600" size={24} /><div><h4 className="font-semibold text-white">Location</h4><p className="text-white/60">{contactInfo.location}</p></div></div>
-                        </div>
-                        <div className="flex mt-auto space-x-6">
-                            <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 transition-colors hover:text-red-600" aria-label="GitHub"><Github size={24} /></a>
-                            <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 transition-colors hover:text-red-600" aria-label="LinkedIn"><Linkedin size={24} /></a>
-                            <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-400 transition-colors hover:text-red-600" aria-label="Facebook"><Facebook size={24} /></a>
-                            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 transition-colors hover:text-red-600" aria-label="Instagram"><Instagram size={24} /></a>
-                        </div>
-                    </div>
-                    <div className="p-8 border shadow-lg rounded-2xl bg-white/5 backdrop-blur-md border-white/10">
-                        <h3 className="mb-6 text-2xl font-bold text-white">Send a Message</h3>
-                        <form ref={formRef} onSubmit={sendEmail} className="space-y-6">
-                            <input type="text" name="user_name" placeholder="Your Name" required className="w-full p-4 text-white border bg-black/30 border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500" />
-                            <input type="email" name="user_email" placeholder="Your Email" required className="w-full p-4 text-white border bg-black/30 border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500" />
-                            <textarea name="message" rows="5" placeholder="Your Message" required className="w-full p-4 text-white border bg-black/30 border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
-                            <button type="submit" className="px-8 py-4 font-semibold text-white transition-all duration-300 transform rounded-full shadow-lg bg-gradient-to-r from-red-600 to-pink-800 hover:from-red-700 hover:to-pink-600 hover:scale-105 hover:shadow-red-500/25">Send Message</button>
-                        </form>
-                    </div>
+          {filteredProjects.length > 6 && (
+            <div className="mt-12 text-center">
+              <button
+                type="button"
+                onClick={() => setShowAll((previous) => !previous)}
+                className="rounded-full bg-gradient-to-r from-red-600 to-pink-700 px-7 py-3 font-semibold transition hover:-translate-y-1"
+              >
+                {showAll ? 'Show Less' : 'View More'}
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* TOOLS */}
+      <section id="tools" className="scroll-mt-20 px-4 py-24 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <SectionHeading
+            eyebrow="Technical Stack"
+            title="Tools & Technologies"
+            description="Technologies and tools used across ERP, full-stack, database, mobile, IoT, and design projects."
+          />
+
+          <div className="mb-12 flex justify-center">
+            <div className="flex flex-wrap justify-center gap-1 rounded-2xl border border-white/10 bg-white/5 p-2">
+              {['All', 'Databases', 'Frameworks', 'Languages', 'Tools'].map(
+                (category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setToolsTab(category)}
+                    className={`rounded-xl px-5 py-2.5 text-sm font-medium transition ${
+                      toolsTab === category
+                        ? 'bg-gradient-to-r from-red-600 to-pink-700 text-white shadow-lg'
+                        : 'text-white/55 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                )
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {displayedTools.map((tool, index) => (
+              <div
+                key={`${tool.category}-${tool.name}-${index}`}
+                className="group flex min-h-36 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.035] p-5 text-center transition duration-300 hover:-translate-y-1 hover:border-red-500/40 hover:bg-red-500/[0.04]"
+              >
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 p-3 transition group-hover:bg-red-500/10">
+                  <img
+                    src={tool.icon}
+                    alt={tool.name}
+                    className="h-10 w-10 object-contain"
+                  />
                 </div>
-            </div>
-        </section>
+                <h3 className="text-sm font-semibold text-white/80 transition group-hover:text-red-400">
+                  {tool.name}
+                </h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        <footer className="px-4 py-8 border-t border-white/10">
-            <div className="max-w-6xl mx-auto text-center">
-                <p className="text-white/60">
-                    © {new Date().getFullYear()} {yourName}. Built with React. All rights reserved.
-                </p>
-            </div>
-        </footer>
+      {/* CONTACT */}
+      <section id="contact" className="scroll-mt-20 px-4 py-24 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <SectionHeading
+            eyebrow="Contact"
+            title="Let's Connect"
+            description="Have a project, opportunity, or technical problem worth solving? Get in touch."
+          />
+
+          <div className="grid gap-7 md:grid-cols-2">
+            <GlassCard className="flex flex-col">
+              <h3 className="text-2xl font-bold">Get in Touch</h3>
+              <p className="mt-3 leading-7 text-white/60">
+                I am open to software engineering opportunities, freelance
+                projects, and collaborations.
+              </p>
+
+              <div className="mt-8 space-y-6">
+                <ContactItem
+                  icon={<Mail size={21} />}
+                  label="Email"
+                  value={contactInfo.email}
+                  href={`mailto:${contactInfo.email}`}
+                />
+                <ContactItem
+                  icon={<Phone size={21} />}
+                  label="Phone"
+                  value={contactInfo.phone}
+                  href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
+                />
+                <ContactItem
+                  icon={<MapPin size={21} />}
+                  label="Location"
+                  value={contactInfo.location}
+                />
+              </div>
+
+              <div className="mt-auto flex gap-5 pt-10">
+                <SocialIcon href={socialLinks.github} label="GitHub">
+                  <Github size={22} />
+                </SocialIcon>
+                <SocialIcon href={socialLinks.linkedin} label="LinkedIn">
+                  <Linkedin size={22} />
+                </SocialIcon>
+                <SocialIcon href={socialLinks.facebook} label="Facebook">
+                  <Facebook size={22} />
+                </SocialIcon>
+                <SocialIcon href={socialLinks.instagram} label="Instagram">
+                  <Instagram size={22} />
+                </SocialIcon>
+              </div>
+            </GlassCard>
+
+            <GlassCard>
+              <h3 className="text-2xl font-bold">Send a Message</h3>
+
+              <form ref={formRef} onSubmit={sendEmail} className="mt-7 space-y-5">
+                <input
+                  type="text"
+                  name="user_name"
+                  placeholder="Your Name"
+                  required
+                  className="w-full rounded-xl border border-white/10 bg-black/30 p-4 text-white outline-none placeholder:text-white/30 focus:border-red-500/60 focus:ring-2 focus:ring-red-500/20"
+                />
+
+                <input
+                  type="email"
+                  name="user_email"
+                  placeholder="Your Email"
+                  required
+                  className="w-full rounded-xl border border-white/10 bg-black/30 p-4 text-white outline-none placeholder:text-white/30 focus:border-red-500/60 focus:ring-2 focus:ring-red-500/20"
+                />
+
+                <textarea
+                  name="message"
+                  rows="6"
+                  placeholder="Your Message"
+                  required
+                  className="w-full resize-none rounded-xl border border-white/10 bg-black/30 p-4 text-white outline-none placeholder:text-white/30 focus:border-red-500/60 focus:ring-2 focus:ring-red-500/20"
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className="rounded-full bg-gradient-to-r from-red-600 to-pink-700 px-8 py-3.5 font-semibold transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSending ? 'Sending...' : 'Send Message'}
+                </button>
+              </form>
+            </GlassCard>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/10 px-4 py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
+          <p className="text-sm text-white/40">
+            © {new Date().getFullYear()} {name}. Built with React.
+          </p>
+          <a
+            href={contactInfo.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-red-400 hover:text-red-300"
+          >
+            ewandirubut.site
+          </a>
+        </div>
+      </footer>
     </div>
   );
 };
+
+const SectionHeading = ({ eyebrow, title, description }) => (
+  <div className="mx-auto mb-14 max-w-3xl text-center">
+    <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-red-500">
+      {eyebrow}
+    </p>
+    <h2 className="text-4xl font-black text-transparent bg-gradient-to-r from-red-500 to-pink-600 bg-clip-text sm:text-5xl">
+      {title}
+    </h2>
+    <p className="mt-5 leading-7 text-white/55">{description}</p>
+  </div>
+);
+
+const GlassCard = ({ children, className = '' }) => (
+  <div
+    className={`rounded-2xl border border-white/10 bg-white/[0.035] p-7 shadow-xl shadow-black/10 backdrop-blur-md transition hover:border-red-500/25 ${className}`}
+  >
+    {children}
+  </div>
+);
+
+const InfoRow = ({ label, value }) => (
+  <div className="border-b border-white/5 pb-3">
+    <p className="text-xs uppercase tracking-wider text-white/35">{label}</p>
+    <p className="mt-1 text-sm font-medium text-white/75">{value}</p>
+  </div>
+);
+
+const TimelineItem = ({ period, title, institution, description }) => (
+  <div className="relative border-l-2 border-red-500/25 pl-5">
+    <div className="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full bg-red-500 shadow-lg shadow-red-500/30" />
+    <p className="text-xs font-bold uppercase tracking-wider text-red-400">
+      {period}
+    </p>
+    <h4 className="mt-2 font-bold text-white">{title}</h4>
+    <p className="mt-1 text-sm font-medium text-white/55">{institution}</p>
+    <p className="mt-2 text-sm leading-6 text-white/45">{description}</p>
+  </div>
+);
+
+const ContactItem = ({ icon, label, value, href }) => {
+  const content = (
+    <>
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-500">
+        {icon}
+      </div>
+      <div>
+        <p className="text-xs uppercase tracking-wider text-white/35">{label}</p>
+        <p className="mt-1 text-sm font-medium text-white/70">{value}</p>
+      </div>
+    </>
+  );
+
+  return href ? (
+    <a
+      href={href}
+      className="flex items-center gap-4 transition hover:text-red-400"
+    >
+      {content}
+    </a>
+  ) : (
+    <div className="flex items-center gap-4">{content}</div>
+  );
+};
+
+const SocialIcon = ({ href, label, children }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={label}
+    className="text-white/45 transition hover:-translate-y-1 hover:text-red-500"
+  >
+    {children}
+  </a>
+);
 
 export default Portfolio;
