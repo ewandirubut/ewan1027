@@ -177,8 +177,8 @@ const Portfolio = () => {
       description:
         'A modern expense tracking mobile application for splitting bills among friends and groups. Includes group creation, shared expense tracking, automatic balance calculation, authentication, and real-time synchronization.',
       technologies: ['SwiftUI', 'Firebase', 'Firestore', 'MVVM'],
-      image: '/https://postimg.cc/yDmWqBHh',
-      github: 'https://github.com/ewan1027',
+      image: 'https://i.postimg.cc/t4f6xCvc/spendz.webp',
+      github: 'https://github.com/ewandirubut',
     },
     {
       title: 'Tuition Management Android App',
@@ -192,7 +192,7 @@ const Portfolio = () => {
         'Firestore',
         'QR Scanning',
       ],
-      image: 'https://postimg.cc/gLV1zM2G',
+      image: 'https://i.postimg.cc/Kjwb5wX3/Screenshot-2025-10-27-at-14-01-29.png',
       github: 'https://github.com/ewan1027/MAD.git',
     },
     {
